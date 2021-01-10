@@ -1,42 +1,118 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <form>
+      <div>
+      <label for="username"
+        >Username:
+        <input
+          type="text"
+          id="username"
+          v-model.trim="username"
+          :text="username"
+      /></label>
+      </div>
+      <div>
+      <label for="password"
+        >Password:
+        <input
+          type="password"
+          id="password"
+          v-model.trim="password"
+          :text="password"
+      /></label>
+      </div>
+      <div>
+      <button type="button" @click="reqLogin">Send "Login" request</button><br />
+      <button type="button" @click="reqGetProfile">
+        Send "Profile 999" request
+      </button>
+      </div>
+    </form>
   </div>
+  <div id="msg">{{ msg }}</div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "HelloWorld",
+  data() {
+    return {
+      username: "",
+      password: "",
+      msg: "",
+    };
+  },
+  methods: {
+    /**
+     * Sends a request to retrieve a profile
+     * status: alpha
+     */
+    reqGetProfile() {
+      this.axios({
+        method: "get",
+        url: "http://127.0.0.1:8000/profile/999",
+        // read stored token
+        // headers: { Authorization: "Bearer "+localStorage.getItem('token') },
+        withCredentials: true,
+      })
+        .then(function (response) {
+          console.log(response.data);
+          /** 
+          response:
+          
+          headers: {…},
+          status: 200,
+          statusText: "OK",
+          data: {…},
+          data: {status: 401, res: "invalid token"}
+          config: {url: "http://127.0.0.1:8000/profile/999", method: "get", headers: {…}, transformRequest: Array(1), transformResponse: Array(1),}
+          ...
+          */
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+    },
+    /**
+     *
+     */
+    reqLogin() {
+      this.axios({
+        method: "post",
+        url: "http://127.0.0.1:8000/login",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+        data: {
+          username: this.username,
+          // TODO hash password
+          password: this.password,
+        },
+      })
+      .then(function (r) {
+        // store token
+        // localStorage.setItem("token", r.data.token);
+        document.cookie = "username=" + encodeURIComponent(r.data.username);
+        document.cookie = "token=" + encodeURIComponent(r.data.token);
+        console.info(`Response: ${r.status}, ${JSON.stringify(r.data)}`);
+      })
+      .catch(function (e) {
+        console.error(e);
+      });
+    },
+
+    /**
+     * @deprecated
+     * @link https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+     * */
+    async digestPassword(message) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(message);
+      const hash = await crypto.subtle.digest("SHA-512", data);
+      return hash;
+    },
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -1,24 +1,11 @@
-# vue_js_vue-axios
+# Client for ConfettiApp
 
-## Project setup
-```
-npm install
-```
+In ConfettiApp people can create spontaneous events and send hearty invitations to their friends
+The client enables managing events, capturing invitations and basic chat functionality
 
-### Compiles and hot-reloads for development
 ```
-npm run serve
+npm install  # Project setup
+npm run serve  # Compiles and hot-reloads for development
+npm run build  # Compiles and minifies for production
+npm run lint  # Lints and fixes files
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
