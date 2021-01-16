@@ -34,9 +34,10 @@
 
 <script>
 export default {
-  name: "HelloWorld",
+  name: "Form",
   data() {
     return {
+      // TODO leverage VueX
       username: "",
       password: "",
       msg: "",
@@ -76,8 +77,9 @@ export default {
     /**
      *
      */
-    reqLogin() {
-      this.axios({
+    async reqLogin() {
+
+      let resLogin = await this.axios({
         method: "post",
         url: "http://127.0.0.1:8000/login",
         headers: {
@@ -91,14 +93,24 @@ export default {
       })
       .then(function (r) {
         // store token
-        // localStorage.setItem("token", r.data.token);
+        localStorage.setItem("username", r.data.username);
+        localStorage.setItem("token", r.data.token);
         document.cookie = "username=" + encodeURIComponent(r.data.username);
         document.cookie = "token=" + encodeURIComponent(r.data.token);
         console.info(`Response: ${r.status}, ${JSON.stringify(r.data)}`);
+        return true;
       })
       .catch(function (e) {
         console.error(e);
+        return false;
       });
+      
+      
+      
+      if(resLogin === true){
+        this.$router.push({name: 'UserProfile', params: { id: localStorage.getItem("username")}})
+      }
+
     },
 
     /**

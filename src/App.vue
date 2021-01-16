@@ -1,14 +1,15 @@
 <template>
-  <HelloWorld />
+  <!-- <LoginForm /> -->
+  <router-view></router-view>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+//import LoginForm from './components/Login/LoginForm.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    //LoginForm
   }
 }
 </script>
